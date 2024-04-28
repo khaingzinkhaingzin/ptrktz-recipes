@@ -23,7 +23,6 @@ export default {
 		async getCategories() {
 			let res = await this.$axios.get("/api/categories");
 			this.categories = res.data;
-			console.log(res.data);
 		}
 	},
 	mounted() {
