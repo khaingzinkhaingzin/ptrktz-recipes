@@ -1,23 +1,21 @@
 <template>
 	<div>
-		<h1>Categories</h1>
-
-		<ul>
-			<li v-for="category in categories" :key="category.id">
-				{{ category.name }}
-			</li>
-		</ul>
+		<Home />
 	</div>
 </template>
 
 <script>
 
+import Home from './pages/Home.vue'
 
 export default {
 	data() {
 		return {
 			categories: []
 		}
+	},
+	components: {
+		Home
 	},
 	methods: {
 		async getCategories() {
