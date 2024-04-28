@@ -1,31 +1,28 @@
 <template>
 	<div>
-		<Home />
+		<router-view v-slot="{ Component }">
+			<component :is="Component" />
+		</router-view>
 	</div>
 </template>
 
 <script>
-
-import Home from './pages/Home.vue'
-
 export default {
 	data() {
 		return {
-			categories: []
-		}
+			categories: [],
+		};
 	},
-	components: {
-		Home
-	},
+	components: {},
 	methods: {
 		async getCategories() {
 			let res = await this.$axios.get("/api/categories");
 			this.categories = res.data;
-		}
+		},
 	},
 	mounted() {
 		this.getCategories();
-	}
+	},
 };
 </script>
 
