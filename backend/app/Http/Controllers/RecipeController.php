@@ -17,7 +17,7 @@ class RecipeController extends Controller
         try {
 
             // throw new \Exception('this is error');
-            return Recipe::filter(request(['category']))->paginate(6);
+            return Recipe::filter(request(['category']))->with('category')->orderBy('created_at', 'desc')->paginate(6);
 
         } catch (\Exception $e) {
 
@@ -213,7 +213,7 @@ class RecipeController extends Controller
                 ], 400);
             }
 
-            $path = 'storage/' . request('photo')->store('/recipes');
+            $path = env('APP_URL') . '/storage/' . request('photo')->store('/recipes');
 
             return [
                 'path' => $path,

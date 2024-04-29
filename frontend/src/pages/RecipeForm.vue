@@ -72,6 +72,7 @@
 			<h1 class="text-3xl font-bold border-b pb-4">Recipe</h1>
 			<form
 				class="max-w-[700px] mx-auto mt-[100px] shadow-md p-8 rounded-lg space-y-5"
+				@submit.prevent="createRecipe"
 			>
 				<div class="mb-5">
 					<label
@@ -84,6 +85,7 @@
 						id="title"
 						class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
 						placeholder="Chicken Curry..."
+						v-model="data.title"
 					/>
 					<!-- <span class="text-red-500 text-xs ml-2 tracking-wider">title is required!</span> -->
 				</div>
@@ -98,6 +100,7 @@
 						rows="4"
 						class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 						placeholder="This is created..."
+						v-model="data.description"
 					></textarea>
 					<!-- <span class="text-red-500 text-xs ml-2 tracking-wider">title is required!</span> -->
 				</div>
@@ -107,13 +110,11 @@
 						class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
 						>Category</label
 					>
-					<input
-						list="category"
-						class="border block w-full p-2 rounded-xl border-gray-400 bg-[#F9FAFB] shadow"
-						placeholder="Burmese"
-					/>
+					<select class="border block w-full p-2 rounded-xl border-gray-400 bg-[#F9FAFB] shadow" v-model="data.category_id">
+						<option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+					</select>
 				</div>
-				<input type="file" class="block my-8" required />
+				<input @change="uploadImage" type="file" class="block my-8" required />
 				<!-- added image will show here -->
 				<!-- <div>
         <img class="h-[300px] w-full object-cover" src="" alt="">
@@ -128,3 +129,75 @@
 		</div>
 	</div>
 </template>
+
+<script>
+export default {
+	data() {
+		return {
+			data: {
+				title: '',
+				description: '',
+				category_id: '',
+				photo: '',
+			},
+			categories: []
+		}
+	},
+	methods: {
+		async getCategories() {
+            try {
+
+                let res = await this.$axios.get('/api/categories');
+                if (res) {
+                    this.categories = res.data;
+					console.log(this.categories);
+                }
+
+            } catch (e) {
+                console.log(e);
+            }
+        },
+		uploadImage(e) {
+			let file = e.target.files[0];
+			if (!file instanceof File) {
+				return;
+			}
+
+			this.data.photo = file;
+		},
+		async createRecipe() {
+			try {
+
+                let { data: photo } = await this.$axios.post('/api/recipes/upload', { photo: this.data.photo }, {
+					headers: {
+						'content-type': 'multipart/form-data',
+					}
+				});
+				if (photo) {
+					this.data.photo = photo.path;
+
+					let res = await this.$axios.post('/api/recipes', this.data, {
+						headers: {
+							'content-type': 'application/json'
+						}
+					});
+
+					console.log(res);
+				}
+
+
+
+            } catch (e) {
+                console.log(e);
+            }
+		}
+	},
+	mounted() {
+		this.getCategories();
+	}
+}
+</script>
+
+<style>
+
+</style>

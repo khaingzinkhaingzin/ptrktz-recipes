@@ -36,28 +36,16 @@
 				<nav class="bg-red-400 text-white grid grid-flow-col text-center mt-14">
 					<div
 						class="cursor-pointer hover:bg-white hover:text-red-400 transition-all duration-500 w-[120px] p-3 active"
+						@click="filterRecipeByCategory()"
 					>
 						All recipes
 					</div>
 					<div
 						class="cursor-pointer hover:bg-white hover:text-red-400 transition-all duration-500 w-[120px] p-3"
+						v-for="category in categories" :key="category.id"
+						@click="filterRecipeByCategory(category.name)"
 					>
-						Japanese
-					</div>
-					<div
-						class="cursor-pointer hover:bg-white hover:text-red-400 transition-all duration-500 w-[120px] p-3"
-					>
-						Vegetarian
-					</div>
-					<div
-						class="cursor-pointer hover:bg-white hover:text-red-400 transition-all duration-500 w-[120px] p-3"
-					>
-						Meat
-					</div>
-					<div
-						class="cursor-pointer hover:bg-white hover:text-red-400 transition-all duration-500 w-[120px] p-3"
-					>
-						Fast & Easy
+						{{ category.name }}
 					</div>
 				</nav>
 			</div>
@@ -68,40 +56,36 @@
 					name=""
 					id=""
 				>
-					<option value="all">All Recipes</option>
-					<option value="japanese">Japanese</option>
-					<option value="vegetarian">Vegetarian</option>
-					<option value="meat">Meat</option>
-					<option value="fastandeasy">Fast & Easy</option>
+					<option>All Recipes</option>
+					<option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
 				</select>
 			</div>
 
 			<!-- recipe -->
 			<div class="my-20 grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-12">
-				<router-link :to="{ name: 'detail' }">
-					<div
-						class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg active:shadow-none transition-all duration-500"
-					>
-						<img
-							class="h-[300px] mb-4 rounded-t-lg w-full object-cover"
-							src="https://cdn.shopify.com/s/files/1/0291/8606/4520/files/ygn-200513-7.jpg?v=1589460584"
-							alt="product image"
-						/>
-						<div class="px-5 pb-5">
-							<h5
-								class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white"
-							>
-								Tomato Salad
-							</h5>
-							<p class="line-clamp-2 mt-2 text-gray-500">
-								Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-								Ratione mollitia modi fugit ex sint? Veritatis dicta iste quasi
-								sapiente, totam est a alias. Fugiat nulla illo dolorem ullam
-								sequi laudantium.
-							</p>
-						</div>
-					</div>
-				</router-link>
+				<div v-for="recipe in recipes" :key="recipe.id">
+                    <router-link :to="{ name: 'detail', params: { id: recipe.id} }">
+                        <div
+                            class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg active:shadow-none transition-all duration-500 max-h-[600px]"
+                        >
+                            <img
+                                class="h-[300px] mb-4 rounded-t-lg w-full object-cover"
+                                :src="recipe.photo"
+                                alt="product image"
+                            />
+                            <div class="px-5 pb-5">
+                                <h5
+                                    class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white line-clamp-1"
+                                >
+                                    {{ recipe?.title }}
+                                </h5>
+                                <p class="line-clamp-2 mt-2 text-gray-500">
+                                    {{ recipe?.description }}
+                                </p>
+                            </div>
+                        </div>
+				    </router-link>
+                </div>
 			</div>
 		</main>
 	</div>
@@ -109,7 +93,55 @@
 
 <script>
 export default {
+    data() {
+        return {
+            recipes: [],
+			categories: [],
+        }
+    },
+    methods: {
+        async getRecipes() {
+            try {
 
+                let res = await this.$axios.get('/api/recipes');
+                if (res) {
+                    this.recipes = res.data.data;
+                }
+
+            } catch (e) {
+                console.log(e);
+            }
+        },
+		async getCategories() {
+            try {
+
+                let res = await this.$axios.get('/api/categories');
+                if (res) {
+                    this.categories = res.data;
+					console.log(this.categories);
+                }
+
+            } catch (e) {
+                console.log(e);
+            }
+        },
+		async filterRecipeByCategory(category = "") {
+			try {
+
+                let res = await this.$axios.get('/api/recipes?category=' + category);
+                if (res) {
+                    this.recipes = res.data.data;
+                }
+
+            } catch (e) {
+                console.log(e);
+            }
+		}
+    },
+    mounted() {
+        this.getRecipes();
+		this.getCategories();
+    }
 }
 </script>
 
