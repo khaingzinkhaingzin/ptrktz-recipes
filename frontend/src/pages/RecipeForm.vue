@@ -114,11 +114,11 @@
 						<option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
 					</select>
 				</div>
-				<input @change="uploadImage" type="file" class="block my-8" required />
+				<input @change="uploadImage" type="file" class="block my-8" accept="image/png, image/jpeg" required />
 				<!-- added image will show here -->
-				<!-- <div>
-        <img class="h-[300px] w-full object-cover" src="" alt="">
-      </div> -->
+				<div v-if="data.photo">
+					<img class="h-[300px] w-full object-cover" :src="data.photo" alt="">
+				</div>
 				<button
 					type="submit"
 					class="block w-full hover:text-white hover:bg-red-400 transition-all duration-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center border border-red-400 text-red-400"
@@ -176,13 +176,26 @@ export default {
 				if (photo) {
 					this.data.photo = photo.path;
 
-					let res = await this.$axios.post('/api/recipes', this.data, {
-						headers: {
-							'content-type': 'application/json'
-						}
-					});
+					if (this.$route.params?.id) {
 
-					console.log(res);
+						// edit
+						let res = await this.$axios.put(`/api/recipes/${this.$route.params.id}`, this.data, {
+							headers: {
+								'content-type': 'application/json'
+							}
+						});
+						if (res) console.log(res);
+					} else {
+
+						// create
+						let res = await this.$axios.post('/api/recipes', this.data, {
+							headers: {
+								'content-type': 'application/json'
+							}
+						});
+
+					}
+
 				}
 
 
@@ -190,10 +203,26 @@ export default {
             } catch (e) {
                 console.log(e);
             }
-		}
+		},
+		async getSingleRecipe(id) {
+            try {
+
+                let { data } = await this.$axios.get(`/api/recipes/${id}`);
+                if (data) {
+                    this.data = data;
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        }
+	},
+	computed: {
 	},
 	mounted() {
 		this.getCategories();
+		if (this.$route.params?.id) {
+			this.getSingleRecipe(this.$route.params.id);
+		}
 	}
 }
 </script>

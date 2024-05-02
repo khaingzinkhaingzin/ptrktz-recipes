@@ -37,9 +37,8 @@
 					{{ recipe.description }}
 				</p>
 				<div class="flex gap-4 border-t py-5 justify-end">
-					<a href="form.php" class="bg-blue-400 text-white px-4 py-2 rounded-lg"
-						>Edit</a
-					>
+					<router-link :to="{ name: 'editForm', params: { id: recipe.id } }" class="bg-blue-400 text-white px-4 py-2 rounded-lg">Edit</router-link>
+					
 					<button class="bg-red-500 text-white px-3 py-2 rounded-lg">
 						Delete
 					</button>

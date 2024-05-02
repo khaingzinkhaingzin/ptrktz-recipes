@@ -15,7 +15,7 @@ Route::get('/recipes', [RecipeController::class, 'index']);
 Route::post('/recipes', [RecipeController::class, 'store']);
 
 // update a single recipe 
-Route::patch('/recipes/{recipe}', [RecipeController::class, 'update']);
+Route::put('/recipes/{recipe}', [RecipeController::class, 'update']);
 
 // get single recipe 
 Route::get('/recipes/{recipe}', [RecipeController::class, 'show']);
