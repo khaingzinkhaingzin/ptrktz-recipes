@@ -63,29 +63,40 @@
 
 			<!-- recipe -->
 			<div class="my-20 grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-12">
-				<div v-for="recipe in recipes" :key="recipe.id">
-                    <router-link :to="{ name: 'detail', params: { id: recipe.id} }">
-                        <div
-                            class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg active:shadow-none transition-all duration-500 max-h-[600px]"
-                        >
-                            <img
-                                class="h-[300px] mb-4 rounded-t-lg w-full object-cover"
-                                :src="recipe.photo"
-                                alt="product image"
-                            />
-                            <div class="px-5 pb-5">
-                                <h5
-                                    class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white line-clamp-1"
-                                >
-                                    {{ recipe?.title }}
-                                </h5>
-                                <p class="line-clamp-2 mt-2 text-gray-500">
-                                    {{ recipe?.description }}
-                                </p>
-                            </div>
-                        </div>
-				    </router-link>
-                </div>
+				<div v-if="!gettingRecipes" v-for="recipe in recipes" :key="recipe.id">
+					<router-link :to="{ name: 'detail', params: { id: recipe.id} }">
+						<div
+							class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg active:shadow-none transition-all duration-500 max-h-[600px]"
+						>
+							<img
+								class="h-[300px] mb-4 rounded-t-lg w-full object-cover"
+								:src="recipe.photo"
+								alt="product image"
+							/>
+							<div class="px-5 pb-5">
+								<h5
+									class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white line-clamp-1"
+								>
+									{{ recipe?.title }}
+								</h5>
+								<p class="line-clamp-2 mt-2 text-gray-500">
+									{{ recipe?.description }}
+								</p>
+							</div>
+						</div>
+					</router-link>
+				</div>
+				<div v-else v-for="(v, index) in new Array(6)" :key="index">
+					<div
+						class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg active:shadow-none transition-all duration-500 max-h-[600px] animate-pulse">
+						<div class="h-[300px] mb-4 rounded-t-lg w-full object-cover bg-slate-700" />
+						<div class="px-5 pb-5 bg-slate-700">
+							<div class="h-[5px] bg-slate-700" />
+							<div class="h-[5px] mt-2 bg-slate-700"> </div>
+							<div class="h-[5px] w-[80%] mt-1 bg-slate-700"></div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</main>
 	</div>
@@ -97,6 +108,7 @@ export default {
         return {
             recipes: [],
 			categories: [],
+			gettingRecipes: true,
         }
     },
     methods: {
@@ -106,6 +118,7 @@ export default {
                 let res = await this.$axios.get('/api/recipes');
                 if (res) {
                     this.recipes = res.data.data;
+					this.gettingRecipes = false;
                 }
 
             } catch (e) {

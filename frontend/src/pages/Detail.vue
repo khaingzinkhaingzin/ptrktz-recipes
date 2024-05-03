@@ -39,7 +39,7 @@
 				<div class="flex gap-4 border-t py-5 justify-end">
 					<router-link :to="{ name: 'editForm', params: { id: recipe.id } }" class="bg-blue-400 text-white px-4 py-2 rounded-lg">Edit</router-link>
 					
-					<button class="bg-red-500 text-white px-3 py-2 rounded-lg">
+					<button @click="deleteRecipe(recipe.id)" class="bg-red-500 text-white px-3 py-2 rounded-lg">
 						Delete
 					</button>
 				</div>
@@ -67,7 +67,11 @@ export default {
             } catch (e) {
                 console.log(e);
             }
-        }
+        },
+		async deleteRecipe(id) {
+			await this.$axios.delete(`/api/recipes/${id}`);
+			this.$router.push({ name: 'home' });
+		}
     },
     mounted() {
         this.getSingleRecipe();
